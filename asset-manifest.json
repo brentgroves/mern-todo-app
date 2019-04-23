@@ -1,0 +1,16 @@
+{
+  "files": {
+    "main.css": "/mern-todo-app/static/css/main.584f321a.chunk.css",
+    "main.js": "/mern-todo-app/static/js/main.a0249ae2.chunk.js",
+    "main.js.map": "/mern-todo-app/static/js/main.a0249ae2.chunk.js.map",
+    "runtime~main.js": "/mern-todo-app/static/js/runtime~main.63dec340.js",
+    "runtime~main.js.map": "/mern-todo-app/static/js/runtime~main.63dec340.js.map",
+    "static/js/2.b41502e9.chunk.js": "/mern-todo-app/static/js/2.b41502e9.chunk.js",
+    "static/js/2.b41502e9.chunk.js.map": "/mern-todo-app/static/js/2.b41502e9.chunk.js.map",
+    "index.html": "/mern-todo-app/index.html",
+    "precache-manifest.618a286f597e42c4e1b0cf1ceb265a01.js": "/mern-todo-app/precache-manifest.618a286f597e42c4e1b0cf1ceb265a01.js",
+    "service-worker.js": "/mern-todo-app/service-worker.js",
+    "static/css/main.584f321a.chunk.css.map": "/mern-todo-app/static/css/main.584f321a.chunk.css.map",
+    "static/media/logo.svg": "/mern-todo-app/static/media/logo.5d5d9eef.svg"
+  }
+}
