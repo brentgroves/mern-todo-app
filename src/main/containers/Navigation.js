@@ -31,7 +31,6 @@ export class Navigation extends Component {
     }
     render() {
       return (
-        <div>
           <Navbar color="light" light expand="md">
             <NavbarBrand href="/">reactstrap</NavbarBrand>
             <NavbarToggler onClick={this.toggle} />
@@ -60,7 +59,6 @@ export class Navigation extends Component {
               </Nav>
             </Collapse>
           </Navbar>
-        </div>
       );
     }
   }
