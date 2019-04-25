@@ -18,7 +18,7 @@ class App extends Component {
         return (
 			
 		<Router>
-			<Container fluid="true">
+			<Container fluid={true}>
                 <Row>
 					<Col>
 						<Navigation />

@@ -1,94 +1,72 @@
-const express = require("express");
-const http = require("http");
-const socketIO = require("socket.io");
-
-// mongodb://root:password123@198.174.21.23:27017/databasename
-// mongodb://root:password123@198.174.21.23:27017,198.342.121.23:27017,142.32.32.21:3001/databasename?replicaSet=rs01&ssl=false&connectTimeoutMS=100000
-// https://examples.javacodegeeks.com/software-development/mongodb/mongodb-connection-string-uri-format-example/
-
-var connection_string = "mongodb://localhost/OrderKitchen";
-// Connection string of MongoDb database hosted on Mlab or locally
-// Collection name should be "FoodItems", only one collection as of now.
-// Document format should be as mentioned below, at least one such document:
-// {
-//     "_id": {
-//         "$oid": "5c0a1bdfe7179a6ca0844567"
-//     },
-//     "name": "Veg Roll",
-//     "predQty": 100,
-//     "prodQty": 295,
-//     "ordQty": 1
-// }
-
-const db = require("monk")(connection_string);
-
-const collection_foodItems = db.get("FoodItems");
-
-// our localhost port
-const port = process.env.PORT || 3001;
-
+const express = require('express');
 const app = express();
+const bodyParser = require('body-parser');
+const cors = require('cors');
+const mongoose = require('mongoose');
+const todoRoutes = express.Router();
+const PORT = 4000;
 
-// our server instance
-const server = http.createServer(app);
+let Todo = require('./todo.model');
 
-// This creates our socket using the instance of the server
-const io = socketIO(server);
+app.use(cors());
+app.use(bodyParser.json());
 
-io.on("connection", socket => {
-  console.log("New client connected" + socket.id);
-  //console.log(socket);
+mongoose.connect('mongodb://127.0.0.1:27017/todos', { useNewUrlParser: true });
+const connection = mongoose.connection;
 
-  // Returning the initial data of food menu from FoodItems collection
-  socket.on("initial_data", () => {
-    collection_foodItems.find({}).then(docs => {
-      io.sockets.emit("get_data", docs);
+connection.once('open', function() {
+    console.log("MongoDB database connection established successfully");
+})
+
+todoRoutes.route('/').get(function(req, res) {
+    Todo.find(function(err, todos) {
+        if (err) {
+            console.log(err);
+        } else {
+            res.json(todos);
+        }
     });
-  });
-
-  // Placing the order, gets called from /src/main/PlaceOrder.js of Frontend
-  socket.on("putOrder", order => {
-    collection_foodItems
-      .update({ _id: order._id }, { $inc: { ordQty: order.order } })
-      .then(updatedDoc => {
-        // Emitting event to update the Kitchen opened across the devices with the realtime order values
-        io.sockets.emit("change_data");
-      });
-  });
-
-  // Order completion, gets called from /src/main/Kitchen.js
-  socket.on("mark_done", id => {
-    collection_foodItems
-      .update({ _id: id }, { $inc: { ordQty: -1, prodQty: 1 } })
-      .then(updatedDoc => {
-        //Updating the different Kitchen area with the current Status.
-        io.sockets.emit("change_data");
-      });
-  });
-
-  // Functionality to change the predicted quantity value, called from /src/main/UpdatePredicted.js
-  socket.on("ChangePred", predicted_data => {
-    collection_foodItems
-      .update(
-        { _id: predicted_data._id },
-        { $set: { predQty: predicted_data.predQty } }
-      )
-      .then(updatedDoc => {
-        // Socket event to update the Predicted quantity across the Kitchen
-        io.sockets.emit("change_data");
-      });
-  });
-
-  // disconnect is fired when a client leaves the server
-  socket.on("disconnect", () => {
-    console.log("user disconnected");
-  });
 });
 
-/* Below mentioned steps are performed to return the Frontend build of create-react-app from build folder of backend */
+todoRoutes.route('/:id').get(function(req, res) {
+    let id = req.params.id;
+    Todo.findById(id, function(err, todo) {
+        res.json(todo);
+    });
+});
 
-app.use(express.static("build"));
-app.use("/kitchen", express.static("build"));
-app.use("/updatepredicted", express.static("build"));
+todoRoutes.route('/update/:id').post(function(req, res) {
+    Todo.findById(req.params.id, function(err, todo) {
+        if (!todo)
+            res.status(404).send("data is not found");
+        else
+            todo.todo_description = req.body.todo_description;
+            todo.todo_responsible = req.body.todo_responsible;
+            todo.todo_priority = req.body.todo_priority;
+            todo.todo_completed = req.body.todo_completed;
 
-server.listen(port, () => console.log(`Listening on port ${port}`));
+            todo.save().then(todo => {
+                res.json('Todo updated!');
+            })
+            .catch(err => {
+                res.status(400).send("Update not possible");
+            });
+    });
+});
+
+todoRoutes.route('/add').post(function(req, res) {
+    let todo = new Todo(req.body);
+    todo.save()
+        .then(todo => {
+            res.status(200).json({'todo': 'todo added successfully'});
+        })
+        .catch(err => {
+            res.status(400).send('adding new todo failed');
+        });
+});
+
+app.use('/todos', todoRoutes);
+
+app.listen(PORT, function() {
+    console.log("Server is running on Port: " + PORT);
+});
