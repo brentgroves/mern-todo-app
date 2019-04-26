@@ -53,9 +53,12 @@ todoRoutes.route('/update/:id').post(function(req, res) {
             });
     });
 });
-
 todoRoutes.route('/add').post(function(req, res) {
-    let todo = new Todo(req.body);
+  console.log(req.body);
+//  res.json(req.body);
+//	console.dir(req.body);
+//	let todo = new Todo({ todo_description: 'Introduction to Mongoose', todo_responsible: 'test', todo_priority: 'Medium', todo_completed:false});
+	let todo = new Todo(req.body);
     todo.save()
         .then(todo => {
             res.status(200).json({'todo': 'todo added successfully'});
@@ -63,7 +66,9 @@ todoRoutes.route('/add').post(function(req, res) {
         .catch(err => {
             res.status(400).send('adding new todo failed');
         });
+		
 });
+
 
 app.use('/todos', todoRoutes);
 
