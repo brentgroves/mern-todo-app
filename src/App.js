@@ -6,6 +6,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import CreateTodo from "./main/components/create-todo.component";
 import EditTodo from "./main/components/edit-todo.component";
 import TodosList from "./main/components/todos-list.component";
+import Brickset from "./main/components/brickset.component";
 
 import logo from "./Logo.png";
 
@@ -25,7 +26,10 @@ class App extends Component {
                   <Link to="/" className="nav-link">Todos</Link>
                 </li>
                 <li className="navbar-item">
-                  <Link to="/create" className="nav-link">Create Todo</Link>
+                  <Link to="/create" className="nav-link">Create</Link>
+                </li>
+                <li className="navbar-item">
+                  <Link to="/brickset" className="nav-link">Brickset</Link>
                 </li>
               </ul>
             </div>
@@ -34,6 +38,7 @@ class App extends Component {
           <Route path="/" exact component={TodosList} />
           <Route path="/edit/:id" component={EditTodo} />
           <Route path="/create" component={CreateTodo} />
+          <Route path="/brickset" component={Brickset} />
         </div>
       </Router>
     );

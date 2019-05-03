@@ -53,6 +53,18 @@ todoRoutes.route('/update/:id').post(function(req, res) {
             });
     });
 });
+
+todoRoutes.route('/add').post(function(req, res) {
+    let todo = new Todo(req.body);
+    todo.save()
+        .then(todo => {
+            res.status(200).json({'todo': 'todo added successfully'});
+        })
+        .catch(err => {
+            res.status(400).send('adding new todo failed');
+        });
+});
+/*
 todoRoutes.route('/add').post(function(req, res) {
 	console.log('Add handler');
 	console.log(req.body);
@@ -67,7 +79,7 @@ todoRoutes.route('/add').post(function(req, res) {
             res.status(400).send('adding new todo failed');
         });
 });
-
+*/
 
 app.use('/todos', todoRoutes);
 
